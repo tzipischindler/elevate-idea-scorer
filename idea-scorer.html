@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Hackathon Idea Scorer</title>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+
+
+const CRITERIA = [
+  {
+    key: 'pain',
+    label: 'Personal pain evidence',
+    hint: 'Did you or someone close to you actually live this, with a real cost?',
+  },
+  {
+    key: 'evidence',
+    label: 'Public evidence strength',
+    hint: 'Strong = named threads/complaints with engagement. Adjacent = category is documented but not this exact case. Anecdotal = just you.',
+    scale: ['Anecdotal only', 'Adjacent category', 'Some direct signal', 'Multiple sources', 'Strong, measurable'],
+  },
+  {
+    key: 'noFix',
+    label: 'No good existing fix',
+    hint: 'Do people currently patch it with something clunky (workaround, manual process)?',
+  },
+  {
+    key: 'buildable',
+    label: 'Buildable in 2 weeks',
+    hint: 'Can a demo show the core value without access you will not get in time?',
+  },
+  {
+    key: 'relatable',
+    label: 'Judge / audience relatability',
+    hint: 'Will people instantly get why this hurts, with no explanation needed?',
+  },
+  {
+    key: 'portfolio',
+    label: 'Career / portfolio fit',
+    hint: 'Independent of market gap: does building this move you toward a role or skill you actually want?',
+  },
+];
+
+const WEIGHTS = {
+  pain: 1,
+  evidence: 1,
+  noFix: 1,
+  buildable: 1.5,
+  relatable: 1,
+  portfolio: 3,
+};
+
+const emptyScores = () =>
+  Object.fromEntries(CRITERIA.map((c) => [c.key, 3]));
+
+const STARTER_IDEAS = [
+  {
+    id: 1,
+    title: 'Cross-border loan access after relocation',
+    note:
+      'Bank apps/sites geoblock users from certain countries (e.g. Israel), stranding people with active loans with no self-service path to pay off.',
+    scores: {
+      pain: 5,
+      evidence: 2,
+      noFix: 4,
+      buildable: 3,
+      relatable: 4,
+      portfolio: 3,
+    },
+  },
+  {
+    id: 3,
+    title: 'Emotional attunement for bureaucracy limbo (Germany)',
+    note:
+      'AI bureaucracy-navigation tools already exist (SmartBürokratie, Ridocu, Sportellino) but are process/document-focused, not emotionally attuned. General AI emotional-support is saturated and regulated. The gap: emotional fidelity specifically during high-stakes waiting/limbo (Ausländerbehörde silence, visa uncertainty) — close to a potential partner\'s thesis work on emotional fidelity in disaster-response translation. Depends heavily on that partner\'s domain expertise to build well.',
+    scores: {
+      pain: 5,
+      evidence: 3,
+      noFix: 3,
+      buildable: 2,
+      relatable: 5,
+      portfolio: 4,
+    },
+  },
+  {
+    id: 4,
+    title: 'Networking to stay in Germany (visa/economic limbo)',
+    note:
+      'Peer-to-peer "who do I call" networking for people trying to stay in Germany outside clean visa categories. Heavily served already: government Work-and-Stay Agency launching 2026, regional WelcomeCenters, commercial relocation platforms. Real pain, but crowded and partly government-owned.',
+    scores: {
+      pain: 4,
+      evidence: 3,
+      noFix: 2,
+      buildable: 2,
+      relatable: 4,
+      portfolio: 2,
+    },
+  },
+  {
+    id: 5,
+    title: 'Humanizing the geoblock moment (UX, not infrastructure)',
+    note:
+      'Geolocation fraud/compliance infrastructure (GeoComply, MaxMind, etc.) is a mature, crowded enterprise category — not competing there. The open gap: no one designs the human-facing moment of being blocked — plain-language explanation, dignity, a real next step — for the person experiencing it (paying customer, often already vulnerable: elderly, relocated, near a border region). Team fit: PM + UX/frontend partner, portfolio-driven not revenue-driven. Can usability-test directly with mom, a real affected user, on a live unresolved case.',
+    scores: {
+      pain: 5,
+      evidence: 2,
+      noFix: 4,
+      buildable: 5,
+      relatable: 5,
+      portfolio: 4,
+    },
+  },
+  {
+    id: 2,
+    title: 'Ecological transparency for AI chat usage',
+    note:
+      'No major AI platform (free or paid) shows users the resource/environmental footprint of a request. AI labs subsidize usage at a loss (OpenAI ~$14B burn in 2026); ad-funded AI browsers like Arpeely are emerging but have no transparency or offset layer. Awareness-first, business-funded (not user-funded) framing, echoing Ecosia.',
+    scores: {
+      pain: 4,
+      evidence: 3,
+      noFix: 5,
+      buildable: 3,
+      relatable: 4,
+      portfolio: 3,
+    },
+  },
+  {
+    id: 6,
+    title: 'AI agent budget/velocity estimation for solo founders',
+    note:
+      'Real pain (agents burn through credits unpredictably, stalling a build), but the enterprise version of this (Datadog LLM Observability, CloudZero, Flexprice, Portal26, TrueFoundry) is a mature, VC-backed category already — arguably the most crowded space checked so far. Possible thin gap: none target a pre-funding solo/small-team founder using consumer-tier AI, planning a short validation sprint. Career note (not a market-fit score): pursuing this builds a portfolio piece toward AI-product cost/budget planning roles, independent of novelty.',
+    scores: {
+      pain: 4,
+      evidence: 4,
+      noFix: 1,
+      buildable: 4,
+      relatable: 3,
+      portfolio: 5,
+    },
+  },
+  {
+    id: 7,
+    title: 'Situational imposter-syndrome check-in tool',
+    note:
+      'Strong audience fit: this hackathon is women-in-AI focused, and 68% of women in tech report imposter syndrome. But the specific mechanic (body check-in, breathing, recall a matched past win) overlaps closely with existing tools — Rocky.ai (conversational cognitive reframing) and a "Confidence Coach" GPT already built on a wins-log mechanic. Not a market gap; differentiator would be personal specificity/UX and alignment with founder\'s own holistic-leadership brand, not novelty. Worth a closer look before committing — still researching what gap (if any) remains. Emotional-support territory: needs care in design, not just engineering.',
+    scores: {
+      pain: 5,
+      evidence: 3,
+      noFix: 2,
+      buildable: 3,
+      relatable: 5,
+      portfolio: 5,
+    },
+  },
+  {
+    id: 8,
+    title: 'Open-source AI-era tech debt estimation tool (developer-facing)',
+    note:
+      'Real, well-documented pain: GitClear found an 8x rise in duplicated code blocks in AI-assisted commits (2024), and AI-generated code reportedly creates 1.7x more issues per PR. Enterprise tools already address this (SonarQube, CodeScene, Exceeds AI), but all are sold top-down to engineering leadership as paid, per-seat dashboards. Gap: nothing free/open-source framed for an individual developer to self-serve data for a team conversation, without needing management buy-in first. Strong personal fit: founder spent years at Native Instruments quantifying tech-debt cost to justify budget allocation — rare, credible domain depth for this specific niche.',
+    scores: {
+      pain: 4,
+      evidence: 4,
+      noFix: 2,
+      buildable: 3,
+      relatable: 3,
+      portfolio: 5,
+    },
+  },
+];
+
+function weightedTotal(scores) {
+  const sum = CRITERIA.reduce((acc, c) => acc + scores[c.key] * WEIGHTS[c.key], 0);
+  const max = CRITERIA.reduce((acc, c) => acc + 5 * WEIGHTS[c.key], 0);
+  return { sum, max, pct: Math.round((sum / max) * 100) };
+}
+
+function Slider({ criterion, value, onChange }) {
+  const scaleLabel = criterion.scale ? criterion.scale[value - 1] : null;
+  return (
+    <div style={{ marginBottom: '18px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
+        <label style={{ fontSize: '14px', fontWeight: 600, color: '#2b2b26' }}>{criterion.label}</label>
+        <span style={{ fontSize: '13px', color: '#8a7f6a', fontVariantNumeric: 'tabular-nums' }}>
+          {scaleLabel || value}
+        </span>
+      </div>
+      <p style={{ fontSize: '12px', color: '#9c927d', margin: '0 0 8px 0', lineHeight: 1.4 }}>{criterion.hint}</p>
+      <input
+        type="range"
+        min={1}
+        max={5}
+        step={1}
+        value={value}
+        onChange={(e) => onChange(criterion.key, Number(e.target.value))}
+        style={{
+          width: '100%',
+          accentColor: '#a8562f',
+          height: '4px',
+        }}
+      />
+    </div>
+  );
+}
+
+function IdeaCard({ idea, onUpdate, onDelete, isTop }) {
+  const { sum, pct } = weightedTotal(idea.scores);
+
+  return (
+    <div
+      style={{
+        background: isTop ? '#fbf3e9' : '#fdfcfa',
+        border: isTop ? '1.5px solid #a8562f' : '1px solid #e5ddd0',
+        borderRadius: '10px',
+        padding: '20px',
+        marginBottom: '20px',
+        position: 'relative',
+      }}
+    >
+      {isTop && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '-11px',
+            left: '20px',
+            background: '#a8562f',
+            color: '#fdfcfa',
+            fontSize: '11px',
+            fontWeight: 600,
+            padding: '3px 10px',
+            borderRadius: '20px',
+            letterSpacing: '0.02em',
+          }}
+        >
+          Leading
+        </div>
+      )}
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginBottom: '10px' }}>
+        <input
+          value={idea.title}
+          onChange={(e) => onUpdate(idea.id, { ...idea, title: e.target.value })}
+          placeholder="Idea title"
+          style={{
+            fontSize: '17px',
+            fontWeight: 700,
+            fontFamily: 'Georgia, serif',
+            color: '#2b2b26',
+            border: 'none',
+            background: 'transparent',
+            outline: 'none',
+            flex: 1,
+            padding: 0,
+          }}
+        />
+        <button
+          onClick={() => onDelete(idea.id)}
+          style={{
+            border: 'none',
+            background: 'transparent',
+            color: '#b8ab8f',
+            cursor: 'pointer',
+            fontSize: '13px',
+            padding: '2px 6px',
+          }}
+        >
+          remove
+        </button>
+      </div>
+
+      <textarea
+        value={idea.note}
+        onChange={(e) => onUpdate(idea.id, { ...idea, note: e.target.value })}
+        placeholder="One line: who has this pain, and what's broken"
+        rows={2}
+        style={{
+          width: '100%',
+          fontSize: '13px',
+          color: '#5a5346',
+          border: 'none',
+          background: 'transparent',
+          outline: 'none',
+          resize: 'none',
+          fontFamily: 'inherit',
+          padding: 0,
+          marginBottom: '16px',
+          lineHeight: 1.5,
+        }}
+      />
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '18px' }}>
+        <div
+          style={{
+            fontSize: '28px',
+            fontWeight: 700,
+            fontFamily: 'Georgia, serif',
+            color: '#a8562f',
+            minWidth: '58px',
+          }}
+        >
+          {pct}
+        </div>
+        <div style={{ flex: 1, height: '6px', background: '#e5ddd0', borderRadius: '3px', overflow: 'hidden' }}>
+          <div
+            style={{
+              width: `${pct}%`,
+              height: '100%',
+              background: '#a8562f',
+              borderRadius: '3px',
+              transition: 'width 0.3s ease',
+            }}
+          />
+        </div>
+        <div style={{ fontSize: '12px', color: '#9c927d' }}>weighted score</div>
+      </div>
+
+      {CRITERIA.map((c) => (
+        <Slider
+          key={c.key}
+          criterion={c}
+          value={idea.scores[c.key]}
+          onChange={(key, val) => onUpdate(idea.id, { ...idea, scores: { ...idea.scores, [key]: val } })}
+        />
+      ))}
+    </div>
+  );
+}
+
+function IdeaScorer() {
+  const [ideas, setIdeas] = useState(STARTER_IDEAS);
+
+  const addIdea = () => {
+    const id = Date.now();
+    setIdeas([...ideas, { id, title: 'New idea', note: '', scores: emptyScores() }]);
+  };
+
+  const updateIdea = (id, updated) => {
+    setIdeas(ideas.map((i) => (i.id === id ? updated : i)));
+  };
+
+  const deleteIdea = (id) => {
+    setIdeas(ideas.filter((i) => i.id !== id));
+  };
+
+  const ranked = [...ideas].sort((a, b) => weightedTotal(b.scores).sum - weightedTotal(a.scores).sum);
+  const topId = ranked.length > 1 ? ranked[0].id : null;
+
+  return (
+    <div
+      style={{
+        fontFamily: "'Iowan Old Style', 'Palatino Linotype', Georgia, serif",
+        background: '#f5f0e6',
+        minHeight: '100vh',
+        padding: '32px 16px',
+      }}
+    >
+      <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+        <h1
+          style={{
+            fontSize: '26px',
+            fontWeight: 700,
+            color: '#2b2b26',
+            marginBottom: '6px',
+            fontFamily: 'Georgia, serif',
+          }}
+        >
+          Which idea gets the pitch?
+        </h1>
+        <p style={{ fontSize: '14px', color: '#8a7f6a', marginBottom: '32px', lineHeight: 1.5 }}>
+          Score each user story on the same six axes. Buildability counts for more — a hackathon can't
+          reward a problem it can't demo. Drag the sliders as your read on each idea changes.
+        </p>
+
+        {ranked.map((idea) => (
+          <IdeaCard
+            key={idea.id}
+            idea={idea}
+            onUpdate={updateIdea}
+            onDelete={deleteIdea}
+            isTop={idea.id === topId}
+          />
+        ))}
+
+        <button
+          onClick={addIdea}
+          style={{
+            width: '100%',
+            padding: '14px',
+            background: 'transparent',
+            border: '1.5px dashed #c9bda3',
+            borderRadius: '10px',
+            color: '#8a7f6a',
+            fontSize: '14px',
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+            marginTop: '4px',
+          }}
+        >
+          + Add another user story
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<IdeaScorer />);
+</script>
+</body>
+</html>
