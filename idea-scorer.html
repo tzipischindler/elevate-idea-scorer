@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Hackathon Idea Scorer</title>
+<title>Hackathon Idea Prioritization</title>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -219,9 +219,9 @@ const STARTER_IDEAS = [
   },
 ];
 
-function weightedTotal(scores) {
-  const sum = CRITERIA.reduce((acc, c) => acc + scores[c.key] * WEIGHTS[c.key], 0);
-  const max = CRITERIA.reduce((acc, c) => acc + 5 * WEIGHTS[c.key], 0);
+function weightedTotal(scores, weights) {
+  const sum = CRITERIA.reduce((acc, c) => acc + scores[c.key] * weights[c.key], 0);
+  const max = CRITERIA.reduce((acc, c) => acc + 5 * weights[c.key], 0);
   return { sum, max, pct: Math.round((sum / max) * 100) };
 }
 
@@ -294,8 +294,8 @@ function AutoResizeTextarea({ value, onChange, placeholder }) {
   );
 }
 
-function IdeaCard({ idea, onUpdate, onDelete, isTop }) {
-  const { sum, pct } = weightedTotal(idea.scores);
+function IdeaCard({ idea, onUpdate, onDelete, isTop, weights }) {
+  const { sum, pct } = weightedTotal(idea.scores, weights);
   const noteFields = [
     { key: 'problem', label: 'Problem', placeholder: 'What problem are you solving?' },
     { key: 'solution', label: 'Solution', placeholder: 'What are you building to solve it?' },
@@ -433,6 +433,11 @@ function IdeaCard({ idea, onUpdate, onDelete, isTop }) {
 
 function IdeaScorer() {
   const [ideas, setIdeas] = useState(() => (IS_DEMO ? STARTER_IDEAS : []));
+  const [weights, setWeights] = useState(WEIGHTS);
+
+  const updateWeight = (key, value) => {
+    setWeights({ ...weights, [key]: Math.max(0, Number(value) || 0) });
+  };
 
   const addIdea = () => {
     const id = Date.now();
@@ -460,7 +465,7 @@ function IdeaScorer() {
     setIdeas(ideas.filter((i) => i.id !== id));
   };
 
-  const ranked = [...ideas].sort((a, b) => weightedTotal(b.scores).sum - weightedTotal(a.scores).sum);
+  const ranked = [...ideas].sort((a, b) => weightedTotal(b.scores, weights).sum - weightedTotal(a.scores, weights).sum);
   const topId = ranked.length > 1 ? ranked[0].id : null;
 
   return (
@@ -482,12 +487,51 @@ function IdeaScorer() {
             fontFamily: 'Georgia, serif',
           }}
         >
-          Which idea gets the pitch?
+          Which Idea Should We Test First?
         </h1>
         <p style={{ fontSize: '14px', color: '#8a7f6a', marginBottom: '32px', lineHeight: 1.5 }}>
-          Score each user story on the same six axes. Buildability counts for more — a hackathon can't
-          reward a problem it can't demo. As well as portfolio fit, as I want this product to support my career development. Drag the sliders as your read on each idea changes.
-        </p>
+      Score each user story on the same six axes.<br />
+      Set the weight for each factor below. Higher weights matter more in the ranking.<br />
+      Drag the sliders as your read on each idea changes.
+      </p>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '10px',
+            background: '#fdfcfa',
+            border: '1px solid #e5ddd0',
+            borderRadius: '10px',
+            padding: '14px 16px',
+            marginBottom: '24px',
+          }}
+        >
+          {CRITERIA.map((criterion) => (
+            <label key={criterion.key} style={{ fontSize: '11px', color: '#8a7f6a' }}>
+              {criterion.label}
+              <input
+                type="number"
+                min="0"
+                step="0.5"
+                value={weights[criterion.key]}
+                onChange={(e) => updateWeight(criterion.key, e.target.value)}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  marginTop: '4px',
+                  padding: '6px 7px',
+                  border: '1px solid #d8cdbb',
+                  borderRadius: '5px',
+                  background: '#fffefa',
+                  color: '#2b2b26',
+                  fontFamily: 'inherit',
+                }}
+              />
+            </label>
+          ))}
+        </div>
 
         <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', fontSize: '12px' }}>
           <a href="?" style={{ color: IS_DEMO ? '#8a7f6a' : '#a8562f' }}>
@@ -540,7 +584,7 @@ function IdeaScorer() {
                 </span>
                 <span style={{ flex: 1 }}>{idea.title || 'Untitled idea'}</span>
                 <strong style={{ color: '#a8562f', fontVariantNumeric: 'tabular-nums' }}>
-                  {weightedTotal(idea.scores).pct}
+                  {weightedTotal(idea.scores, weights).pct}
                 </strong>
               </a>
             ))}
@@ -554,6 +598,7 @@ function IdeaScorer() {
             onUpdate={updateIdea}
             onDelete={deleteIdea}
             isTop={idea.id === topId}
+            weights={weights}
           />
         ))}
 
