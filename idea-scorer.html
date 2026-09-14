@@ -60,17 +60,20 @@ const WEIGHTS = {
 const emptyScores = () =>
   Object.fromEntries(CRITERIA.map((c) => [c.key, 3]));
 
-const STORAGE_KEY = 'idea-scorer-ideas';
 const IS_DEMO = new URLSearchParams(window.location.search).get('mode') === 'demo';
-const MODE_STORAGE_KEY = `${STORAGE_KEY}-${IS_DEMO ? 'demo' : 'blank'}`;
-const EMPTY_IDEAS = [];
 
 const STARTER_IDEAS = [
   {
     id: 1,
     title: 'Cross-border loan access after relocation',
     problem:
-      'Bank apps/sites geoblock users from certain countries (e.g. Israel), stranding people with active loans with no self-service path to pay off.',
+      'Bank apps/sites geoblock users from certain countries, stranding people with active loans with no self-service path to pay off.',
+    solution:
+      '',
+    uniqueValueProposition: '',
+    unfairAdvantage: '',
+    customerSegments: '',
+    existingAlternatives: '',
     scores: {
       pain: 5,
       evidence: 2,
@@ -85,7 +88,13 @@ const STARTER_IDEAS = [
     title: 'Emotional attunement for bureaucracy limbo (Germany)',
     problem:
       'AI bureaucracy-navigation tools already exist (SmartBürokratie, Ridocu, Sportellino) but are process/document-focused, not emotionally attuned. General AI emotional-support is saturated and regulated. The gap: emotional fidelity specifically during high-stakes waiting/limbo (Ausländerbehörde silence, visa uncertainty) — close to a potential partner\'s thesis work on emotional fidelity in disaster-response translation. Depends heavily on that partner\'s domain expertise to build well.',
-    scores: {
+    solution:
+      '',
+    uniqueValueProposition: '',
+    unfairAdvantage: '',
+    customerSegments: '',
+    existingAlternatives: '',
+      scores: {
       pain: 5,
       evidence: 3,
       noFix: 3,
@@ -99,6 +108,11 @@ const STARTER_IDEAS = [
     title: 'Networking to stay in Germany (visa/economic limbo)',
     problem:
       'Peer-to-peer "who do I call" networking for people trying to stay in Germany outside clean visa categories. Heavily served already: government Work-and-Stay Agency launching 2026, regional WelcomeCenters, commercial relocation platforms. Real pain, but crowded and partly government-owned.',
+    solution: '',
+    uniqueValueProposition: '',
+    unfairAdvantage: '',
+    customerSegments: '',
+    existingAlternatives: '',
     scores: {
       pain: 4,
       evidence: 3,
@@ -112,9 +126,13 @@ const STARTER_IDEAS = [
     id: 5,
     title: 'Humanizing the geoblock moment (UX, not infrastructure)',
     problem:
-      'Geolocation fraud/compliance infrastructure (GeoComply, MaxMind, etc.) is a mature, crowded enterprise category — not competing there. The open gap: no one designs the human-facing moment of being blocked — plain-language explanation, dignity, a real next step — for the person experiencing it (paying customer, often already vulnerable: elderly, relocated, near a border region). Team fit: PM + UX/frontend partner, portfolio-driven not revenue-driven. Can usability-test directly with mom, a real affected user, on a live unresolved case.',
+      'While the infrastructure is in place to address geoblocking, the user-facing experience is often abrupt and unhelpful. Users are left confused and frustrated when they encounter geoblocks, especially in sensitive situations like financial transactions or accessing essential services.',
     solution:
-      'The open gap: no one designs the human-facing moment of being blocked — plain-language explanation, dignity, a real next step — for the person experiencing it (paying customer, often already vulnerable: elderly, relocated, near a border region).',
+      'The open gap: no one designs the human-facing moment of being blocked — plain-language explanation, dignity, a real next step — for the person experiencing it, not the business. Could be a UX overlay, a browser extension, or a service that provides context and guidance when geoblocked.',
+    uniqueValueProposition: '',
+    unfairAdvantage: 'Having access to awesome UX talent and a founder with lived experience of geoblocking pain.',
+    customerSegments: 'Non technical users who encounter geoblocks in financial, governmental, or essential service contexts.',
+    existingAlternatives: 'Geolocation fraud/compliance infrastructure (GeoComply, MaxMind, etc.)',
     scores: {
       pain: 5,
       evidence: 2,
@@ -129,6 +147,11 @@ const STARTER_IDEAS = [
     title: 'Ecological transparency for AI chat usage',
     problem:
       'No major AI platform (free or paid) shows users the resource/environmental footprint of a request. AI labs subsidize usage at a loss (OpenAI ~$14B burn in 2026); ad-funded AI browsers like Arpeely are emerging but have no transparency or offset layer. Awareness-first, business-funded (not user-funded) framing, echoing Ecosia.',
+    solution: '',
+    uniqueValueProposition: '',
+    unfairAdvantage: '',
+    customerSegments: '',
+    existingAlternatives: '',
     scores: {
       pain: 4,
       evidence: 3,
@@ -142,7 +165,12 @@ const STARTER_IDEAS = [
     id: 6,
     title: 'AI agent budget/velocity estimation for solo founders',
     problem:
-      'Real pain (agents burn through credits unpredictably, stalling a build), but the enterprise version of this (Datadog LLM Observability, CloudZero, Flexprice, Portal26, TrueFoundry) is a mature, VC-backed category already — arguably the most crowded space checked so far. Possible thin gap: none target a pre-funding solo/small-team founder using consumer-tier AI, planning a short validation sprint. Career note (not a market-fit score): pursuing this builds a portfolio piece toward AI-product cost/budget planning roles, independent of novelty.',
+      'When going about our startup idea, we want to be able to manage our AI agent budget and velocity, agents burn through credits unpredictably and suggest features we need to make a judgment about that we might not need at this stage of our product development, a solo founder can find herself not knowing what a certain task would cost, while big companies can pay for enterprise solutions to solve this, the small founder can use a simple tool that would let her know what a certain task would cost,task would cost her. ',
+    solution: 'We have a tool to measure AI agent velocity and manage it without paying for it, as we want to stretch our credits as much as we can when we are testing our startup idea ',
+    uniqueValueProposition: '',
+    unfairAdvantage: '',
+    customerSegments: 'pre-funding solo/small-team founder using consumer-tier AI, planning a short validation sprint.',
+    existingAlternatives: 'Datadog LLM Observability, CloudZero, Flexprice, Portal26, TrueFoundry. ',
     scores: {
       pain: 4,
       evidence: 4,
@@ -156,7 +184,12 @@ const STARTER_IDEAS = [
     id: 7,
     title: 'Situational imposter-syndrome check-in tool',
     problem:
-      'Strong audience fit: this hackathon is women-in-AI focused, and 68% of women in tech report imposter syndrome. But the specific mechanic (body check-in, breathing, recall a matched past win) overlaps closely with existing tools — Rocky.ai (conversational cognitive reframing) and a "Confidence Coach" GPT already built on a wins-log mechanic. Not a market gap; differentiator would be personal specificity/UX and alignment with founder\'s own holistic-leadership brand, not novelty. Worth a closer look before committing — still researching what gap (if any) remains. Emotional-support territory: needs care in design, not just engineering.',
+      '68% of women in tech report imposter syndrome that presents as a physical stress response and narrative questioning her ability to go about the task that impacts the liklihood to take on challanges and the execution. ',
+    solution: 'Short and consciese self-check-in tool for situational imposter syndrome, with a wins-log mechanic and optional AI reframing.',
+    uniqueValueProposition: '',
+    unfairAdvantage: 'differentiator would be personal specificity/UX and alignment with founder\'s own holistic-leadership brand',
+    customerSegments: 'Women in tech',
+    existingAlternatives: 'Still researching what is available, the specific mechanic (body check-in, breathing, recall a matched past win) overlaps closely with existing tools — Rocky.ai (conversational cognitive reframing) and a "Confidence Coach" GPT already built on a wins-log mechanic.',
     scores: {
       pain: 5,
       evidence: 3,
@@ -171,6 +204,11 @@ const STARTER_IDEAS = [
     title: 'Open-source AI-era tech debt estimation tool (developer-facing)',
     problem:
       'Real, well-documented pain: GitClear found an 8x rise in duplicated code blocks in AI-assisted commits (2024), and AI-generated code reportedly creates 1.7x more issues per PR. Enterprise tools already address this (SonarQube, CodeScene, Exceeds AI), but all are sold top-down to engineering leadership as paid, per-seat dashboards. Gap: nothing free/open-source framed for an individual developer to self-serve data for a team conversation, without needing management buy-in first. Strong personal fit: founder spent years at Native Instruments quantifying tech-debt cost to justify budget allocation — rare, credible domain depth for this specific niche.',
+    solution: '',
+    uniqueValueProposition: '',
+    unfairAdvantage: '',
+    customerSegments: '',
+    existingAlternatives: '',
     scores: {
       pain: 4,
       evidence: 4,
@@ -181,29 +219,6 @@ const STARTER_IDEAS = [
     },
   },
 ];
-
-const STARTER_IDEAS_WITH_FIELDS = STARTER_IDEAS.map((idea) => ({
-  problem: '',
-  solution: '',
-  unfairAdvantage: '',
-  customerSegments: '',
-  existingAlternatives: '',
-  ...idea,
-}));
-
-function mergeSavedDemoIdeas(savedIdeas) {
-  const starterById = Object.fromEntries(STARTER_IDEAS_WITH_FIELDS.map((idea) => [idea.id, idea]));
-  return savedIdeas.map((idea) => {
-    const starter = starterById[idea.id];
-    if (!starter) return idea;
-    return {
-      ...starter,
-      ...idea,
-      problem: idea.problem || idea.note || starter.problem || '',
-      scores: { ...starter.scores, ...idea.scores },
-    };
-  });
-}
 
 function weightedTotal(scores) {
   const sum = CRITERIA.reduce((acc, c) => acc + scores[c.key] * WEIGHTS[c.key], 0);
@@ -285,13 +300,15 @@ function IdeaCard({ idea, onUpdate, onDelete, isTop }) {
   const noteFields = [
     { key: 'problem', label: 'Problem', placeholder: 'What problem are you solving?' },
     { key: 'solution', label: 'Solution', placeholder: 'What are you building to solve it?' },
-    { key: 'unfairAdvantage', label: 'Unfair advantage', placeholder: 'Why are you especially well-positioned to solve it?' },
-    { key: 'customerSegments', label: 'Customer segments', placeholder: 'Who specifically experiences this problem?' },
-    { key: 'existingAlternatives', label: 'Existing alternatives', placeholder: 'What do people use or do today instead?' },
+    { key: 'uniqueValueProposition', label: 'Unique Value Proposition', placeholder: 'What distinct value does this idea provide?' },
+    { key: 'unfairAdvantage', label: 'Unfair Advantage', placeholder: 'Why are you especially well-positioned to solve it?' },
+    { key: 'customerSegments', label: 'Customer Segments', placeholder: 'Who specifically experiences this problem?' },
+    { key: 'existingAlternatives', label: 'Existing Alternatives', placeholder: 'What do people use or do today instead?' },
   ];
 
   return (
     <div
+      id={`idea-${idea.id}`}
       style={{
         background: isTop ? '#fbf3e9' : '#fdfcfa',
         border: isTop ? '1.5px solid #a8562f' : '1px solid #e5ddd0',
@@ -369,7 +386,7 @@ function IdeaCard({ idea, onUpdate, onDelete, isTop }) {
               {field.label}
             </label>
             <AutoResizeTextarea
-              value={idea[field.key] || (field.key === 'problem' ? idea.note || '' : '')}
+              value={idea[field.key] || ''}
               onChange={(value) => onUpdate(idea.id, { ...idea, [field.key]: value })}
               placeholder={field.placeholder}
             />
@@ -416,20 +433,7 @@ function IdeaCard({ idea, onUpdate, onDelete, isTop }) {
 }
 
 function IdeaScorer() {
-  const [ideas, setIdeas] = useState(() => {
-    try {
-      const savedIdeas = localStorage.getItem(MODE_STORAGE_KEY);
-      if (!savedIdeas) return IS_DEMO ? STARTER_IDEAS_WITH_FIELDS : EMPTY_IDEAS;
-      const parsedIdeas = JSON.parse(savedIdeas);
-      return IS_DEMO ? mergeSavedDemoIdeas(parsedIdeas) : parsedIdeas;
-    } catch {
-      return IS_DEMO ? STARTER_IDEAS_WITH_FIELDS : EMPTY_IDEAS;
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem(MODE_STORAGE_KEY, JSON.stringify(ideas));
-  }, [ideas]);
+  const [ideas, setIdeas] = useState(() => (IS_DEMO ? STARTER_IDEAS : []));
 
   const addIdea = () => {
     const id = Date.now();
@@ -440,10 +444,10 @@ function IdeaScorer() {
         title: 'New idea',
         problem: '',
         solution: '',
+        uniqueValueProposition: '',
         unfairAdvantage: '',
         customerSegments: '',
         existingAlternatives: '',
-        note: '',
         scores: emptyScores(),
       },
     ]);
@@ -494,6 +498,55 @@ function IdeaScorer() {
             Filled example
           </a>
         </div>
+
+        {ranked.length > 0 && (
+          <div
+            style={{
+              background: '#fdfcfa',
+              border: '1px solid #e5ddd0',
+              borderRadius: '10px',
+              padding: '16px 18px',
+              marginBottom: '24px',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                color: '#a8562f',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                marginBottom: '10px',
+              }}
+            >
+              Scoreboard
+            </div>
+            {ranked.map((idea, index) => (
+              <a
+                key={idea.id}
+                href={`#idea-${idea.id}`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  color: '#2b2b26',
+                  textDecoration: 'none',
+                  fontSize: '13px',
+                  padding: '7px 0',
+                  borderTop: index === 0 ? 'none' : '1px solid #eee8de',
+                }}
+              >
+                <span style={{ width: '20px', color: '#9c927d', fontVariantNumeric: 'tabular-nums' }}>
+                  {index + 1}.
+                </span>
+                <span style={{ flex: 1 }}>{idea.title || 'Untitled idea'}</span>
+                <strong style={{ color: '#a8562f', fontVariantNumeric: 'tabular-nums' }}>
+                  {weightedTotal(idea.scores).pct}
+                </strong>
+              </a>
+            ))}
+          </div>
+        )}
 
         {ranked.map((idea) => (
           <IdeaCard
