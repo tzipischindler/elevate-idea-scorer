@@ -277,6 +277,7 @@ function IdeaCard({ idea, onUpdate, onDelete, isTop }) {
           padding: 0,
           marginBottom: '16px',
           lineHeight: 1.5,
+          min-height: '34vh',
         }}
       />
 
